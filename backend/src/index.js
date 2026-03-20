@@ -22,6 +22,12 @@ app.use('/api/dashboard', dashboardRoutes)
 const clientsRoutes = require('./routes/clients.routes')
 app.use('/api/clients', clientsRoutes)
 
+const casesRoutes = require('./routes/cases.routes')
+app.use('/api/cases', casesRoutes)
+
+const policiesRoutes = require('./routes/policies.routes')
+app.use('/api/policies', policiesRoutes)
+
 app.listen(PORT, () => {
   console.log(`API listening on http://localhost:${PORT}`)
 })

@@ -7,6 +7,10 @@ import Dashboard from './pages/dashboard/Dashboard'
 import ClientsList from './pages/clients/ClientsList'
 import ClientForm from './pages/clients/ClientForm'
 import ClientDetail from './pages/clients/ClientDetail'
+import CasesList from './pages/cases/CasesList'
+import CaseForm from './pages/cases/CaseForm'
+import CaseDetail from './pages/cases/CaseDetail'
+import PoliciesList from './pages/policies/PoliciesList'
 
 export default function App() {
   return (
@@ -76,7 +80,37 @@ export default function App() {
           element={
             <ProtectedRoute>
               <MainLayout>
-                <div className="p-6">Casos</div>
+                <CasesList />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/cases/new"
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <CaseForm />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/cases/:id"
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <CaseDetail />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/cases/:id/edit"
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <CaseForm />
               </MainLayout>
             </ProtectedRoute>
           }
@@ -86,7 +120,7 @@ export default function App() {
           element={
             <ProtectedRoute>
               <MainLayout>
-                <div className="p-6">Pólizas</div>
+                <PoliciesList />
               </MainLayout>
             </ProtectedRoute>
           }
