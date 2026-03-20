@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import LoginPage from './pages/auth/Login'
 import ChangePasswordPage from './pages/auth/ChangePassword'
 import ProtectedRoute from './components/layout/ProtectedRoute'
+import AdminRoute from './components/layout/AdminRoute'
 import MainLayout from './components/layout/MainLayout'
 import Dashboard from './pages/dashboard/Dashboard'
 import ClientsList from './pages/clients/ClientsList'
@@ -11,6 +12,8 @@ import CasesList from './pages/cases/CasesList'
 import CaseForm from './pages/cases/CaseForm'
 import CaseDetail from './pages/cases/CaseDetail'
 import PoliciesList from './pages/policies/PoliciesList'
+import UsersList from './pages/users/UsersList'
+import UserForm from './pages/users/UserForm'
 
 export default function App() {
   return (
@@ -129,9 +132,35 @@ export default function App() {
           path="/users"
           element={
             <ProtectedRoute>
-              <MainLayout>
-                <div className="p-6">Usuarios</div>
-              </MainLayout>
+              <AdminRoute>
+                <MainLayout>
+                  <UsersList />
+                </MainLayout>
+              </AdminRoute>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/users/new"
+          element={
+            <ProtectedRoute>
+              <AdminRoute>
+                <MainLayout>
+                  <UserForm />
+                </MainLayout>
+              </AdminRoute>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/users/:id/edit"
+          element={
+            <ProtectedRoute>
+              <AdminRoute>
+                <MainLayout>
+                  <UserForm />
+                </MainLayout>
+              </AdminRoute>
             </ProtectedRoute>
           }
         />
