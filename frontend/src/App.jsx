@@ -4,6 +4,9 @@ import ChangePasswordPage from './pages/auth/ChangePassword'
 import ProtectedRoute from './components/layout/ProtectedRoute'
 import MainLayout from './components/layout/MainLayout'
 import Dashboard from './pages/dashboard/Dashboard'
+import ClientsList from './pages/clients/ClientsList'
+import ClientForm from './pages/clients/ClientForm'
+import ClientDetail from './pages/clients/ClientDetail'
 
 export default function App() {
   return (
@@ -33,7 +36,37 @@ export default function App() {
           element={
             <ProtectedRoute>
               <MainLayout>
-                <div className="p-6">Clientes</div>
+                <ClientsList />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/clients/new"
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <ClientForm />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/clients/:id"
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <ClientDetail />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/clients/:id/edit"
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <ClientForm />
               </MainLayout>
             </ProtectedRoute>
           }
