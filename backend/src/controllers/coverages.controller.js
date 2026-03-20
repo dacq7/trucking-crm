@@ -13,16 +13,22 @@ exports.createCoverageRequest = async (req, res) => {
     const access = await ensureCaseAccess(caseId, req.user)
     if (!access.c) return res.status(access.status).json({ message: access.message })
 
+    const body = { ...req.body }
+    if (body.limitRequested === '' || body.limitRequested === undefined) body.limitRequested = null
+    if (body.deductible === '' || body.deductible === undefined) body.deductible = null
+    if (body.notes === '') body.notes = null
+
     const coverage = await prisma.coverageRequest.create({
       data: {
-        ...req.body,
+        ...body,
         caseId,
       },
     })
 
     return res.status(201).json(coverage)
-  } catch (_err) {
-    return res.status(500).json({ message: 'Error interno' })
+  } catch (err) {
+    console.error("error:", err)
+    return res.status(500).json({ message: "Error interno", detail: err.message })
   }
 }
 
@@ -37,13 +43,19 @@ exports.updateCoverageRequest = async (req, res) => {
       return res.status(404).json({ message: 'Cobertura no encontrada' })
     }
 
+    const body = { ...req.body }
+    if (body.limitRequested === '' || body.limitRequested === undefined) body.limitRequested = null
+    if (body.deductible === '' || body.deductible === undefined) body.deductible = null
+    if (body.notes === '') body.notes = null
+
     const updated = await prisma.coverageRequest.update({
       where: { id: coverageId },
-      data: req.body,
+      data: body,
     })
     return res.json(updated)
-  } catch (_err) {
-    return res.status(500).json({ message: 'Error interno' })
+  } catch (err) {
+    console.error("error:", err)
+    return res.status(500).json({ message: "Error interno", detail: err.message })
   }
 }
 
@@ -60,8 +72,9 @@ exports.deleteCoverageRequest = async (req, res) => {
 
     await prisma.coverageRequest.delete({ where: { id: coverageId } })
     return res.json({ message: 'Cobertura eliminada' })
-  } catch (_err) {
-    return res.status(500).json({ message: 'Error interno' })
+  } catch (err) {
+    console.error("error:", err)
+    return res.status(500).json({ message: "Error interno", detail: err.message })
   }
 }
 

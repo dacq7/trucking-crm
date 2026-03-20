@@ -11,6 +11,7 @@ function extractBearerToken(req) {
 }
 
 module.exports = function auth(req, res, next) {
+  console.log('auth middleware:', req.method, req.path)
   const token = extractBearerToken(req)
   if (!token) return res.status(401).json({ message: 'Unauthorized' })
 

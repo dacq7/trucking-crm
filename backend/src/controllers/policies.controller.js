@@ -5,6 +5,40 @@ function toInt(value, fallback) {
   return Number.isFinite(n) && n > 0 ? n : fallback
 }
 
+function toFloatOrNull(v) {
+  if (v === '' || v === null || v === undefined) return null
+  const n = Number(v)
+  return Number.isFinite(n) ? n : null
+}
+
+function toDateOrNull(v) {
+  if (!v || v === '') return null
+  const d = new Date(v)
+  return isNaN(d.getTime()) ? null : d.toISOString()
+}
+
+function sanitizePolicyBody(body) {
+  const b = { ...body }
+  b.totalAnnualPremium = toFloatOrNull(b.totalAnnualPremium)
+  b.downPayment = toFloatOrNull(b.downPayment)
+  b.effectiveDate = toDateOrNull(b.effectiveDate)
+  b.expirationDate = toDateOrNull(b.expirationDate)
+  if (b.mga === '') b.mga = null
+  if (b.financeCompany === '') b.financeCompany = null
+  if (b.coveragesSummary === '') b.coveragesSummary = null
+  if (b.remarks === '') b.remarks = null
+  if (Array.isArray(b.boundCoverages)) {
+    b.boundCoverages = b.boundCoverages.map((c) => ({
+      ...c,
+      limit: toFloatOrNull(c.limit) || 0,
+      deductible: toFloatOrNull(c.deductible),
+      premium: toFloatOrNull(c.premium),
+      notes: c.notes === '' ? null : c.notes,
+    }))
+  }
+  return b
+}
+
 async function getCaseWithAccess(caseId, user) {
   const c = await prisma.case.findUnique({ where: { id: caseId }, include: { policy: true } })
   if (!c) return { status: 404, message: 'Caso no encontrado' }
@@ -19,8 +53,9 @@ exports.createPolicy = async (req, res) => {
     if (!access.c) return res.status(access.status).json({ message: access.message })
     if (access.c.policy) return res.status(409).json({ message: 'El caso ya tiene póliza' })
 
-    const boundCoverages = Array.isArray(req.body.boundCoverages) ? req.body.boundCoverages : []
-    const payload = { ...req.body }
+    const sanitizedBody = sanitizePolicyBody(req.body)
+    const boundCoverages = Array.isArray(sanitizedBody.boundCoverages) ? sanitizedBody.boundCoverages : []
+    const payload = { ...sanitizedBody }
     delete payload.boundCoverages
 
     const created = await prisma.$transaction(async (tx) => {
@@ -69,8 +104,9 @@ exports.updatePolicy = async (req, res) => {
     if (!access.c) return res.status(access.status).json({ message: access.message })
     if (!access.c.policy) return res.status(404).json({ message: 'Póliza no encontrada' })
 
-    const boundCoverages = Array.isArray(req.body.boundCoverages) ? req.body.boundCoverages : null
-    const payload = { ...req.body }
+    const sanitizedBody = sanitizePolicyBody(req.body)
+    const boundCoverages = Array.isArray(sanitizedBody.boundCoverages) ? sanitizedBody.boundCoverages : null
+    const payload = { ...sanitizedBody }
     delete payload.boundCoverages
 
     const updated = await prisma.$transaction(async (tx) => {

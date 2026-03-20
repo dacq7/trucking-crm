@@ -5,6 +5,55 @@ function toInt(value, fallback) {
   return Number.isFinite(n) && n > 0 ? n : fallback
 }
 
+function toFloatOrNull(v) {
+  if (v === '' || v === null || v === undefined) return null
+  const n = Number(v)
+  return Number.isFinite(n) ? n : null
+}
+
+function toIntOrNull(v) {
+  if (v === '' || v === null || v === undefined) return null
+  const n = parseInt(v, 10)
+  return Number.isFinite(n) ? n : null
+}
+
+function sanitizeClientBody(body) {
+  const b = { ...body }
+  const floatFields = ['annualGrossRevenue', 'currentPremium', 'totalLossAmount']
+  const intFields = ['yearsInBusiness', 'ownerOperatorPct', 'totalLossesPast3Yrs']
+  const enumFields = ['entityType', 'operationType', 'operationRadius']
+  const stringFields = [
+    'dba',
+    'mcNumber',
+    'ein',
+    'stateOfIncorporation',
+    'website',
+    'contactTitle',
+    'phoneSecondary',
+    'preferredContact',
+    'garagingAddress',
+    'garagingCity',
+    'garagingState',
+    'garagingZip',
+    'crossesBorderDetail',
+    'leasedCarrierName',
+    'hazmatClass',
+    'currentCarrier',
+    'reasonForShopping',
+    'priorCarrier',
+    'nonRenewalReason',
+    'mga',
+    'financeCompany',
+    'coveragesSummary',
+    'remarks',
+  ]
+  for (const f of floatFields) b[f] = toFloatOrNull(b[f])
+  for (const f of intFields) b[f] = toIntOrNull(b[f])
+  for (const f of enumFields) if (b[f] === '') b[f] = null
+  for (const f of stringFields) if (b[f] === '') b[f] = null
+  return b
+}
+
 async function ensureClientAccess(clientId, user) {
   const client = await prisma.client.findUnique({
     where: { id: clientId },
@@ -61,8 +110,9 @@ exports.getClients = async (req, res) => {
       page,
       totalPages: Math.max(1, Math.ceil(total / limit)),
     })
-  } catch (_err) {
-    return res.status(500).json({ message: 'Error interno' })
+  } catch (err) {
+    console.error('createClient error:', err)
+    return res.status(500).json({ message: 'Error interno', detail: err.message })
   }
 }
 
@@ -105,7 +155,7 @@ exports.createClient = async (req, res) => {
 
     const client = await prisma.client.create({
       data: {
-        ...req.body,
+        ...sanitizeClientBody(req.body),
         vendorId,
       },
       include: {
@@ -140,7 +190,7 @@ exports.updateClient = async (req, res) => {
 
     const updated = await prisma.client.update({
       where: { id },
-      data: req.body,
+      data: sanitizeClientBody(req.body),
       include: {
         vendor: { select: { id: true, name: true, email: true } },
       },
