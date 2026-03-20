@@ -1,0 +1,310 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  VENDOR
+}
+
+enum BusinessEntityType {
+  LLC
+  CORPORATION
+  SOLE_PROPRIETOR
+  PARTNERSHIP
+}
+
+enum OperationType {
+  OTR
+  LOCAL
+  REGIONAL
+  INTERMODAL
+}
+
+enum OperationRadius {
+  LOCAL
+  REGIONAL
+  NATIONAL
+}
+
+enum VehicleType {
+  TRACTOR
+  STRAIGHT_TRUCK
+  TRAILER
+  VAN
+  PICKUP
+  BOX_TRUCK
+}
+
+enum VehicleOwnership {
+  OWNED
+  LEASED
+  FINANCED
+}
+
+enum LicenseClass {
+  CLASS_A
+  CLASS_B
+  CLASS_C
+}
+
+enum MVRStatus {
+  CLEAN
+  MINOR_VIOLATIONS
+  MAJOR_VIOLATIONS
+}
+
+enum CaseStatus {
+  LEAD
+  PROSPECT
+  APPLICATION_COMPLETE
+  QUOTE_SENT
+  NEGOTIATION
+  BOUND
+  POLICY_ISSUED
+  RENEWAL
+  LOST
+}
+
+enum PolicyStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+  PENDING
+}
+
+enum CoverageType {
+  PRIMARY_AUTO_LIABILITY
+  MOTOR_TRUCK_CARGO
+  PHYSICAL_DAMAGE_COMPREHENSIVE
+  PHYSICAL_DAMAGE_COLLISION
+  GENERAL_LIABILITY
+  NON_TRUCKING_LIABILITY
+  TRAILER_INTERCHANGE
+  OCCUPATIONAL_ACCIDENT
+}
+
+enum PaymentPlan {
+  FULL_PAY
+  MONTHLY
+  QUARTERLY
+}
+
+enum FilingStatus {
+  FILED
+  PENDING
+  NOT_REQUIRED
+}
+
+model User {
+  id                 String   @id @default(uuid())
+  name               String
+  email              String   @unique
+  passwordHash       String
+  role               Role     @default(VENDOR)
+  isActive           Boolean  @default(true)
+  mustChangePassword Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  clients            Client[]
+  cases              Case[]
+
+  @@map("users")
+}
+
+model Client {
+  id                   String              @id @default(uuid())
+  legalBusinessName    String
+  dba                  String?
+  dotNumber            String              @unique
+  mcNumber             String?
+  ein                  String?
+  yearsInBusiness      Int?
+  entityType           BusinessEntityType?
+  stateOfIncorporation String?
+  website              String?
+  contactName          String
+  contactTitle         String?
+  phonePrimary         String
+  phoneSecondary       String?
+  email                String
+  preferredContact     String?
+  physicalAddress      String
+  physicalCity         String
+  physicalState        String
+  physicalZip          String
+  mailingAddressSame   Boolean             @default(true)
+  mailingAddress       String?
+  mailingCity          String?
+  mailingState         String?
+  mailingZip           String?
+  garagingAddress      String?
+  garagingCity         String?
+  garagingState        String?
+  garagingZip          String?
+  operationType        OperationType?
+  operationRadius      OperationRadius?
+  statesOfOperation    String[]
+  crossesBorder        Boolean             @default(false)
+  crossesBorderDetail  String?
+  annualGrossRevenue   Float?
+  ownerOperatorPct     Int?
+  leasedToCarrier      Boolean             @default(false)
+  leasedCarrierName    String?
+  commodities          String[]
+  hasHazmat            Boolean             @default(false)
+  hazmatClass          String?
+  currentlyInsured     Boolean             @default(false)
+  currentCarrier       String?
+  currentPremium       Float?
+  reasonForShopping    String?
+  priorCarrier         String?
+  hadNonRenewal        Boolean             @default(false)
+  nonRenewalReason     String?
+  totalLossesPast3Yrs  Int?
+  totalLossAmount      Float?
+  isActive             Boolean             @default(true)
+  vendorId             String
+  vendor               User                @relation(fields: [vendorId], references: [id])
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+  vehicles             Vehicle[]
+  drivers              Driver[]
+  cases                Case[]
+
+  @@map("clients")
+}
+
+model Vehicle {
+  id                String           @id @default(uuid())
+  unitNumber        String?
+  type              VehicleType
+  year              Int
+  make              String
+  model             String
+  vin               String
+  statedValue       Float?
+  gvw               Int?
+  ownership         VehicleOwnership
+  lienholderName    String?
+  lienholderAddress String?
+  currentlyInsured  Boolean          @default(false)
+  clientId          String
+  client            Client           @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  @@map("vehicles")
+}
+
+model Driver {
+  id                 String       @id @default(uuid())
+  fullName           String
+  dateOfBirth        DateTime
+  licenseNumber      String
+  licenseState       String
+  licenseClass       LicenseClass
+  cdlExperienceYears Int?
+  truckingExpYears   Int?
+  mvrStatus          MVRStatus    @default(CLEAN)
+  violations         String?
+  accidents          String?
+  hasDUI             Boolean      @default(false)
+  isOwnerOperator    Boolean      @default(false)
+  clientId           String
+  client             Client       @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+
+  @@map("drivers")
+}
+
+model Case {
+  id               String              @id @default(uuid())
+  caseNumber       String              @unique @default(cuid())
+  status           CaseStatus          @default(LEAD)
+  notes            String?
+  lostReason       String?
+  clientId         String
+  client           Client              @relation(fields: [clientId], references: [id])
+  vendorId         String
+  vendor           User                @relation(fields: [vendorId], references: [id])
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+  coverageRequests CoverageRequest[]
+  policy           Policy?
+  statusHistory    CaseStatusHistory[]
+
+  @@map("cases")
+}
+
+model CaseStatusHistory {
+  id        String     @id @default(uuid())
+  status    CaseStatus
+  changedAt DateTime   @default(now())
+  note      String?
+  caseId    String
+  case      Case       @relation(fields: [caseId], references: [id], onDelete: Cascade)
+
+  @@map("case_status_history")
+}
+
+model CoverageRequest {
+  id                     String       @id @default(uuid())
+  coverageType           CoverageType
+  limitRequested         Float?
+  deductible             Float?
+  requiresFMCSAFiling    Boolean      @default(false)
+  hasRefrigeration       Boolean      @default(false)
+  highValueCommodity     String?
+  appliesToAllUnits      Boolean      @default(true)
+  usesThirdPartyTrailers Boolean      @default(false)
+  notes                  String?
+  caseId                 String
+  case                   Case         @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  createdAt              DateTime     @default(now())
+
+  @@map("coverage_requests")
+}
+
+model Policy {
+  id                 String          @id @default(uuid())
+  policyNumber       String          @unique
+  carrier            String
+  mga                String?
+  effectiveDate      DateTime
+  expirationDate     DateTime
+  totalAnnualPremium Float
+  downPayment        Float?
+  paymentPlan        PaymentPlan     @default(FULL_PAY)
+  financeCompany     String?
+  filingStatus       FilingStatus    @default(NOT_REQUIRED)
+  status             PolicyStatus    @default(ACTIVE)
+  coveragesSummary   String?
+  remarks            String?
+  caseId             String          @unique
+  case               Case            @relation(fields: [caseId], references: [id])
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+  boundCoverages     BoundCoverage[]
+
+  @@map("policies")
+}
+
+model BoundCoverage {
+  id           String       @id @default(uuid())
+  coverageType CoverageType
+  limit        Float
+  deductible   Float?
+  premium      Float?
+  notes        String?
+  policyId     String
+  policy       Policy       @relation(fields: [policyId], references: [id], onDelete: Cascade)
+
+  @@map("bound_coverages")
+}
