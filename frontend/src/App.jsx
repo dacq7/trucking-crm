@@ -3,6 +3,7 @@ import LoginPage from './pages/auth/Login'
 import ChangePasswordPage from './pages/auth/ChangePassword'
 import ProtectedRoute from './components/layout/ProtectedRoute'
 import MainLayout from './components/layout/MainLayout'
+import Dashboard from './pages/dashboard/Dashboard'
 
 export default function App() {
   return (
@@ -22,7 +23,7 @@ export default function App() {
           element={
             <ProtectedRoute>
               <MainLayout>
-                <div className="p-6">Dashboard</div>
+                <Dashboard />
               </MainLayout>
             </ProtectedRoute>
           }

@@ -16,6 +16,9 @@ app.get('/api/health', (_req, res) => {
 const authRoutes = require('./routes/auth.routes')
 app.use('/api/auth', authRoutes)
 
+const dashboardRoutes = require('./routes/dashboard.routes')
+app.use('/api/dashboard', dashboardRoutes)
+
 app.listen(PORT, () => {
   console.log(`API listening on http://localhost:${PORT}`)
 })
