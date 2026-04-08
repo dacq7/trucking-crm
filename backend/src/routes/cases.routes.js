@@ -13,6 +13,7 @@ router.get('/', auth, casesController.getCases)
 router.get('/:id', auth, casesController.getCaseById)
 router.post('/', auth, casesController.createCase)
 router.put('/:id', auth, casesController.updateCase)
+router.patch('/:id/status', auth, casesController.patchCaseStatus)
 router.delete('/:id', auth, requireRole('ADMIN'), casesController.deleteCase)
 
 router.post('/:id/coverages', auth, coveragesController.createCoverageRequest)

@@ -177,6 +177,44 @@ exports.updateCase = async (req, res) => {
   }
 }
 
+exports.patchCaseStatus = async (req, res) => {
+  try {
+    const { id } = req.params
+    const { status, note } = req.body
+
+    if (!status) return res.status(400).json({ message: 'status es requerido' })
+
+    const access = await getCaseWithAccess(id, req.user)
+    if (!access.current) return res.status(access.status).json({ message: access.message })
+
+    if (access.current.status === status) {
+      return res.status(400).json({ message: 'El caso ya tiene ese status' })
+    }
+
+    const updated = await prisma.$transaction(async (tx) => {
+      const c = await tx.case.update({
+        where: { id },
+        data: { status },
+        include: {
+          client: { select: { id: true, legalBusinessName: true, dotNumber: true } },
+          vendor: { select: { id: true, name: true } },
+          policy: { select: { id: true, policyNumber: true, status: true, expirationDate: true } },
+        },
+      })
+
+      await tx.caseStatusHistory.create({
+        data: { caseId: id, status, note: note || null },
+      })
+
+      return c
+    })
+
+    return res.json(updated)
+  } catch (_err) {
+    return res.status(500).json({ message: 'Error interno' })
+  }
+}
+
 exports.deleteCase = async (req, res) => {
   try {
     const { id } = req.params
