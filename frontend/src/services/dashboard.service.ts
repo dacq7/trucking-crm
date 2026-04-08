@@ -13,6 +13,11 @@ api.interceptors.request.use((config) => {
   return config
 })
 
+export async function getStats() {
+  const res = await api.get('/dashboard/stats')
+  return res.data
+}
+
 export async function getAdminStats() {
   const res = await api.get('/dashboard/admin')
   return res.data

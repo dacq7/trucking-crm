@@ -20,6 +20,13 @@ function buildPoliciesExpiringSoon(policies) {
   }))
 }
 
+exports.getStats = async (req, res) => {
+  if (req.user.role === 'ADMIN') {
+    return exports.getAdminStats(req, res)
+  }
+  return exports.getVendorStats(req, res)
+}
+
 exports.getAdminStats = async (req, res) => {
   try {
     const now = new Date()

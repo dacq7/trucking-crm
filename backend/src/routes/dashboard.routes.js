@@ -7,6 +7,7 @@ const dashboardController = require('../controllers/dashboard.controller')
 
 const router = express.Router()
 
+router.get('/stats', auth, dashboardController.getStats)
 router.get('/admin', auth, requireRole('ADMIN'), dashboardController.getAdminStats)
 router.get('/vendor', auth, dashboardController.getVendorStats)
 
