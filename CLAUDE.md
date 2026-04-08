@@ -178,7 +178,7 @@ TRAILER_INTERCHANGE, OCCUPATIONAL_ACCIDENT
 
 ## Roadmap de calidad — en progreso
 
-### Fase A — Pulir lo existente (EN CURSO)
+### Fase A — Pulir lo existente (✅ COMPLETA)
 Objetivo: consistencia visual y de idioma para demo profesional en USA.
 
 1. **Idioma** — todo el texto visible al usuario en inglés. Labels, placeholders, botones, toasts, empty states. Los valores de enums del backend (LEAD, BOUND, TRACTOR, etc.) no se traducen.
