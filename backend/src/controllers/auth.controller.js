@@ -58,6 +58,38 @@ exports.login = async (req, res) => {
   }
 }
 
+exports.register = async (req, res) => {
+  try {
+    const { name, email, password, role } = req.body || {}
+
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: 'name, email y password son requeridos' })
+    }
+
+    const allowedRoles = ['ADMIN', 'VENDOR']
+    const userRole = role && allowedRoles.includes(role) ? role : 'VENDOR'
+
+    const existing = await prisma.user.findUnique({ where: { email } })
+    if (existing) return res.status(409).json({ message: 'El email ya está registrado' })
+
+    const passwordHash = await bcrypt.hash(password, 10)
+
+    const user = await prisma.user.create({
+      data: {
+        name,
+        email,
+        passwordHash,
+        role: userRole,
+        mustChangePassword: true,
+      },
+    })
+
+    return res.status(201).json({ user: userDto(user) })
+  } catch (err) {
+    return res.status(500).json({ message: 'Error interno' })
+  }
+}
+
 exports.changePassword = async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body || {}
