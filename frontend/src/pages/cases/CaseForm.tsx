@@ -108,11 +108,11 @@ export default function CaseForm() {
     }
   }
 
-  if (loading) return <div className="p-6">Cargando...</div>
+  if (loading) return <div className="p-6">Loading...</div>
 
   return (
     <div>
-      <PageHeader title={isEdit ? 'Editar caso' : 'Nuevo caso'} subtitle="Administra status y coberturas solicitadas." />
+      <PageHeader title={isEdit ? 'Edit Case' : 'New Case'} subtitle="Manage case status and requested coverages." />
       <div className="p-6">
         <form onSubmit={handleSubmit(onSave)} className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="grid grid-cols-2 gap-4">

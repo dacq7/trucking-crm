@@ -46,7 +46,7 @@ export default function Sidebar() {
               <div className="text-sm font-semibold leading-5 text-slate-900">
                 Trucking CRM
               </div>
-              <div className="mt-0.5 text-xs text-slate-500">Seguro para trucking</div>
+              <div className="mt-0.5 text-xs text-slate-500">Trucking Insurance</div>
             </div>
           </NavLink>
         </div>
@@ -72,7 +72,7 @@ export default function Sidebar() {
               }
             >
               <Users size={16} />
-              Clientes
+              Clients
             </NavLink>
 
             <NavLink
@@ -83,7 +83,7 @@ export default function Sidebar() {
               }
             >
               <FolderOpen size={16} />
-              Casos
+              Cases
             </NavLink>
 
             <NavLink
@@ -94,7 +94,7 @@ export default function Sidebar() {
               }
             >
               <FileText size={16} />
-              Pólizas
+              Policies
             </NavLink>
 
             {showUsers ? (
@@ -106,7 +106,7 @@ export default function Sidebar() {
                 }
               >
                 <UserCog size={16} />
-                Usuarios
+                Users
               </NavLink>
             ) : null}
           </div>

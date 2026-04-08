@@ -56,7 +56,7 @@ export default function PoliciesList() {
         const data = await getPolicies({ page, limit: 20, search: debouncedSearch, status: status || undefined })
         if (!cancelled) setResult(data)
       } catch (err) {
-        if (!cancelled) toast.error(err?.response?.data?.message || 'No se pudo cargar pólizas.')
+        if (!cancelled) toast.error(err?.response?.data?.message || 'Failed to load policies.')
       } finally {
         if (!cancelled) setLoading(false)
       }
@@ -73,7 +73,7 @@ export default function PoliciesList() {
 
   return (
     <div>
-      <PageHeader title="Pólizas" subtitle="Seguimiento de vigencias y primas." />
+      <PageHeader title="Policies" subtitle="Track policy expiration dates and premiums." />
 
       <div className="p-6">
         <div className="mb-4 grid grid-cols-3 gap-3">
@@ -82,12 +82,12 @@ export default function PoliciesList() {
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar por número de póliza o carrier..."
+              placeholder="Search by policy number or carrier..."
               className="w-full bg-transparent text-sm outline-none"
             />
           </div>
           <select className="input" value={status} onChange={(e) => setStatus(e.target.value)}>
-            {policyStatuses.map((s) => <option key={s || 'all'} value={s}>{s || 'Todos los estados'}</option>)}
+            {policyStatuses.map((s) => <option key={s || 'all'} value={s}>{s || 'All statuses'}</option>)}
           </select>
         </div>
 
@@ -95,20 +95,20 @@ export default function PoliciesList() {
           <table className="w-full min-w-[980px] text-left text-sm">
             <thead>
               <tr className="border-b border-slate-200 text-xs font-semibold uppercase tracking-wide text-slate-500">
-                <th className="px-4 py-3">Póliza #</th>
+                <th className="px-4 py-3">Policy #</th>
                 <th className="px-4 py-3">Carrier</th>
-                <th className="px-4 py-3">Cliente</th>
-                <th className="px-4 py-3">Prima</th>
-                <th className="px-4 py-3">Vencimiento</th>
+                <th className="px-4 py-3">Client</th>
+                <th className="px-4 py-3">Premium</th>
+                <th className="px-4 py-3">Expiration</th>
                 <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Días</th>
+                <th className="px-4 py-3">Days Left</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td className="px-4 py-8 text-slate-500" colSpan={7}>Cargando...</td></tr>
+                <tr><td className="px-4 py-8 text-slate-500" colSpan={7}>Loading...</td></tr>
               ) : rows.length === 0 ? (
-                <tr><td className="px-4 py-8 text-slate-500" colSpan={7}>Sin resultados.</td></tr>
+                <tr><td className="px-4 py-8 text-slate-500" colSpan={7}>No results found.</td></tr>
               ) : rows.map((p) => {
                 const days = daysToExpiration(p.expirationDate)
                 const expiringSoon = typeof days === 'number' && days < 30
@@ -139,10 +139,10 @@ export default function PoliciesList() {
         </div>
 
         <div className="mt-4 flex items-center justify-between">
-          <p className="text-sm text-slate-600">Página {page} de {result.totalPages || 1}</p>
+          <p className="text-sm text-slate-500">Page {page} of {result.totalPages || 1}</p>
           <div className="flex gap-2">
-            <button type="button" disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))} className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm disabled:opacity-50">Anterior</button>
-            <button type="button" disabled={page >= (result.totalPages || 1)} onClick={() => setPage((p) => p + 1)} className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm disabled:opacity-50">Siguiente</button>
+            <button type="button" disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))} className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm disabled:opacity-50">Previous</button>
+            <button type="button" disabled={page >= (result.totalPages || 1)} onClick={() => setPage((p) => p + 1)} className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm disabled:opacity-50">Next</button>
           </div>
         </div>
       </div>

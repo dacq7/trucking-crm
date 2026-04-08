@@ -139,43 +139,62 @@ TRAILER_INTERCHANGE, OCCUPATIONAL_ACCIDENT
 
 ---
 
-## Auth — estado actual y lo que falta
+## Estado actual — completado
 
-### Lo que YA existe:
-- `POST /api/auth/login` — funciona
-- `PUT /api/auth/change-password` — protegido con middleware auth
-- `backend/src/middleware/auth.js` — middleware JWT operativo
-- `frontend/src/context/AuthContext.jsx` — contexto de auth en el frontend
+### Auth (✅ Día 1 completo)
+- `POST /api/auth/login` ✓
+- `POST /api/auth/register` — ADMIN-only ✓
+- `PUT /api/auth/change-password` ✓
+- `middleware/auth.js` — JWT ✓
+- `middleware/requireRole.js` — guard de roles ✓
+- Frontend migrado a TypeScript — 25 archivos, tsconfig composite ✓
 
-### Lo que FALTA (Día 1):
-- `POST /api/auth/register` — solo ADMIN puede crear usuarios (vendors)
-- Guard de roles en rutas que lo requieran
-- Migración del frontend a TypeScript (`.jsx → .tsx`, `.js → .ts`)
-- `tsconfig.json` apropiado para Vite + React
+### Backend (✅ Día 2 completo)
+- CRUD Clients con filtro vendorId, soft delete ✓
+- CRUD Cases con PATCH /status + CaseStatusHistory automático ✓
+- Seed idempotente: 1 admin, 3 vendors, 10 clients TX/FL, 24 vehículos, 18 drivers CDL-A, 20 cases en todo el pipeline, 5 policies (~$149k en primas) ✓
+
+### Frontend — páginas existentes
+- `Dashboard.tsx` — KPI cards + PipelineChart (recharts) + ExpiringPolicies ✓
+- `ClientsList.tsx` — tabla con búsqueda debounced, paginación, filtro por rol ✓
+- `ClientDetail.tsx` — tabs: Info general, Vehicles, Drivers, Cases; modales inline ✓
+- `ClientForm.tsx` — formulario de creación/edición
+- `CaseDetail.tsx` — tabs: Info + historial de status, Coberturas, Póliza completa con BoundCoverages ✓
+- `CaseForm.tsx` — formulario de creación/edición
+- `CasesList.tsx` — estado desconocido, revisar antes de tocar
+- `PoliciesList.tsx` — tabla con días a vencimiento, filtro por status ✓
+- `UsersList.tsx` / `UserForm.tsx` — gestión de vendors (solo ADMIN) ✓
+- `Sidebar.tsx` — navegación con roles, logout ✓
+
+### Dashboard (✅ Día 3 completo)
+- Endpoint unificado `/api/dashboard/stats` con split ADMIN/VENDOR ✓
+- README en inglés con badges, stack, features, setup, API tables ✓
 
 ### Patrón de roles:
-- **ADMIN**: gestión de usuarios, acceso total, puede crear vendors
-- **VENDOR**: ve solo sus propios clientes/casos (filtrar por `vendorId`)
+- **ADMIN**: acceso total, ve todos los clientes/casos, breakdown por vendor
+- **VENDOR**: ve solo sus propios datos (filtrado por vendorId)
 
 ---
 
-## Plan de 3 días
+## Roadmap de calidad — en progreso
 
-### Día 1 — Auth completo + TypeScript
-1. `POST /api/auth/register` (solo ADMIN puede invocarla — guard de rol)
-2. Guard de roles reutilizable: `requireRole('ADMIN')` como middleware
-3. Aplicar guards en `users.routes.js` (solo ADMIN)
-4. Migrar frontend a TypeScript: renombrar archivos clave + tsconfig
+### Fase A — Pulir lo existente (EN CURSO)
+Objetivo: consistencia visual y de idioma para demo profesional en USA.
 
-### Día 2 — Módulos core funcionales
-1. Completar CRUD de Clients con filtro por vendorId
-2. CRUD de Cases con pipeline de status
-3. Seed data realista: 2 vendors, 10+ clients con vehículos/conductores, 20+ cases en distintos estados, algunas policies
+1. **Idioma** — todo el texto visible al usuario en inglés. Labels, placeholders, botones, toasts, empty states. Los valores de enums del backend (LEAD, BOUND, TRACTOR, etc.) no se traducen.
+2. **CasesList completa** — búsqueda por caseNumber/cliente, filtro por status dropdown (8 stages), paginación, columnas: Case #, Client, Status badge semántico, Vendor (solo ADMIN), Created date, acción View. Misma calidad que ClientsList.
+3. **Pipeline stepper en CaseDetail** — reemplazar historial plano por stepper horizontal con los 8 stages en orden. Stage actual highlighted, completados en verde, pendientes en gris. Si LOST, rojo en el stage donde se perdió.
 
-### Día 3 — Dashboard + Deploy + README
-1. Dashboard KPIs reales: casos por status, pólizas activas, clientes por vendor, premium total
-2. Deploy Railway: backend + frontend + Postgres
-3. README en inglés: stack, screenshots, live demo, features
+### Fase B — Funcionalidad faltante (PENDIENTE)
+1. **ClientForm completo** — el schema tiene ~40 campos, organizar en secciones: Business Info, Contact, Operations, Insurance History. Usar react-hook-form.
+2. **CaseForm** — crear casos con selección de cliente (search/select), notas iniciales.
+3. **PolicyDetail** — vista dedicada de póliza en lugar de redirigir al caso.
+4. **Registro de vendor** desde panel admin — flujo completo con mustChangePassword.
+
+### Fase C — Deploy y presentación (PENDIENTE)
+1. Deploy en Railway — backend + frontend + Postgres con datos del seed.
+2. Screenshots reales en el README.
+3. Video demo 2 minutos para Upwork.
 
 ---
 
