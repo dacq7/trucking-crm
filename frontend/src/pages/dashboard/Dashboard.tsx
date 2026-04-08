@@ -96,20 +96,26 @@ interface StatCardProps {
   label: string
   value: string | number
   accent?: string
+  showAlert?: boolean
 }
 
-function StatCard({ icon: Icon, label, value, accent }: StatCardProps) {
+function StatCard({ icon: Icon, label, value, accent, showAlert }: StatCardProps) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-shadow duration-200 hover:shadow-md">
       <div className="flex items-center justify-between gap-4">
-        <div>
-          <div className="text-sm font-medium text-slate-600">{label}</div>
-          <div className="mt-1 text-2xl font-semibold tracking-tight text-slate-900">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2 text-sm font-medium text-slate-600">
+            {label}
+            {showAlert ? (
+              <span className="inline-block h-2 w-2 rounded-full bg-red-500 animate-pulse" />
+            ) : null}
+          </div>
+          <div className="mt-1 text-3xl font-semibold tracking-tight text-slate-900">
             {value}
           </div>
         </div>
         <div
-          className={`flex h-10 w-10 items-center justify-center rounded-lg ${
+          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${
             accent ?? 'bg-slate-50 text-slate-700'
           }`}
         >
@@ -145,7 +151,7 @@ function PipelineChart({ data }: PipelineChartProps) {
   if (chartData.length === 0) {
     return (
       <p className="text-center text-sm text-slate-500 py-8">
-        No hay casos registrados aún.
+        No cases recorded yet.
       </p>
     )
   }
@@ -250,7 +256,7 @@ export default function Dashboard() {
             err && typeof err === 'object' && 'response' in err
               ? (err as { response?: { data?: { message?: string } } }).response?.data?.message
               : undefined
-          setError(msg ?? 'Error al cargar el dashboard')
+          setError(msg ?? 'Failed to load dashboard.')
         }
       } finally {
         if (!cancelled) setIsLoading(false)
@@ -309,11 +315,16 @@ export default function Dashboard() {
     <div className="p-6 space-y-6">
 
       {/* Header */}
-      <div>
-        <h2 className="text-2xl font-semibold tracking-tight text-slate-900">Dashboard</h2>
-        <p className="mt-1 text-sm text-slate-500">
-          {role === 'ADMIN' ? 'Agency-wide overview' : 'Your book of business'}
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-semibold tracking-tight text-slate-900">Dashboard</h2>
+          <p className="mt-1 text-sm text-slate-500">
+            {role === 'ADMIN' ? 'Agency-wide overview' : 'Your book of business'}
+          </p>
+        </div>
+        <span className="shrink-0 text-sm text-slate-400">
+          {new Intl.DateTimeFormat('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).format(new Date())}
+        </span>
       </div>
 
       {/* KPI cards */}
@@ -341,6 +352,7 @@ export default function Dashboard() {
           label="Expiring (30 days)"
           value={expiringCount}
           accent={expiringAccent}
+          showAlert={expiringCount > 0}
         />
       </div>
 

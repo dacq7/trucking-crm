@@ -37,7 +37,7 @@ export default function LoginPage() {
       const message =
         err?.response?.data?.message ||
         err?.message ||
-        'No se pudo iniciar sesión.'
+        'Could not sign in. Please try again.'
       toast.error(message)
     } finally {
       setIsSubmitting(false)
@@ -45,69 +45,80 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-svh bg-slate-50 px-4 py-10">
-      <div className="mx-auto w-full max-w-md">
-        <div className="mb-8 flex items-center justify-center gap-3 text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-purple-100 text-purple-700">
-            <Truck size={22} />
+    <main className="flex min-h-svh items-center justify-center bg-gradient-to-br from-slate-900 to-slate-800 px-4 py-10">
+      <div className="w-full max-w-sm">
+
+        {/* Logo + title */}
+        <div className="mb-8 flex flex-col items-center gap-4 text-center">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-500 to-purple-700 shadow-lg shadow-purple-900/40">
+            <Truck size={26} className="text-white" />
           </div>
           <div>
-            <h1 className="text-3xl font-semibold tracking-tight text-slate-900">
+            <h1 className="text-2xl font-semibold tracking-tight text-white">
               Trucking CRM
             </h1>
-            <p className="mt-1 text-sm text-slate-600">Acceso a tu panel</p>
+            <p className="mt-1 text-sm text-slate-400">Sign in to your account</p>
           </div>
         </div>
 
+        {/* Card */}
         <form
-          className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
+          className="rounded-2xl border border-slate-700 bg-slate-800 p-6 shadow-2xl"
           onSubmit={handleSubmit(onSubmit)}
         >
           <div className="mb-4">
-            <label className="mb-1 block text-sm font-medium text-slate-700">Email</label>
+            <label className="mb-1.5 block text-sm font-medium text-slate-300">
+              Email
+            </label>
             <input
               type="email"
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
+              className="input-dark"
+              placeholder="you@company.com"
               {...register('email', {
-                required: 'El email es requerido.',
+                required: 'Email is required.',
                 pattern: {
                   value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                  message: 'Ingresa un email válido.',
+                  message: 'Enter a valid email address.',
                 },
               })}
             />
             {errors.email?.message ? (
-              <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>
+              <p className="mt-1.5 text-xs text-red-400">{String(errors.email.message)}</p>
             ) : null}
           </div>
 
           <div className="mb-6">
-            <label className="mb-1 block text-sm font-medium text-slate-700">
-              Contraseña
+            <label className="mb-1.5 block text-sm font-medium text-slate-300">
+              Password
             </label>
             <input
               type="password"
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
+              className="input-dark"
+              placeholder="••••••••"
               {...register('password', {
-                required: 'La contraseña es requerida.',
+                required: 'Password is required.',
                 minLength: {
                   value: 6,
-                  message: 'La contraseña debe tener mínimo 6 caracteres.',
+                  message: 'Password must be at least 6 characters.',
                 },
               })}
             />
             {errors.password?.message ? (
-              <p className="mt-1 text-xs text-red-600">{errors.password.message}</p>
+              <p className="mt-1.5 text-xs text-red-400">{String(errors.password.message)}</p>
             ) : null}
           </div>
 
           <button
             type="submit"
             disabled={isSubmitting}
-            className="flex w-full items-center justify-center rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-60"
+            className="flex w-full items-center justify-center rounded-lg bg-gradient-to-r from-purple-600 to-purple-700 px-4 py-2.5 text-sm font-medium text-white shadow-lg shadow-purple-900/30 transition hover:from-purple-500 hover:to-purple-600 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {isSubmitting ? 'Ingresando...' : 'Ingresar'}
+            {isSubmitting ? 'Signing in...' : 'Sign In'}
           </button>
+
+          <p className="mt-5 text-center text-xs text-slate-500">
+            Premier Trucking Insurance — Internal Platform
+          </p>
         </form>
       </div>
     </main>
