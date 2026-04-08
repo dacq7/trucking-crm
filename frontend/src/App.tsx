@@ -12,6 +12,7 @@ import CasesList from './pages/cases/CasesList'
 import CaseForm from './pages/cases/CaseForm'
 import CaseDetail from './pages/cases/CaseDetail'
 import PoliciesList from './pages/policies/PoliciesList'
+import PolicyDetail from './pages/policies/PolicyDetail'
 import UsersList from './pages/users/UsersList'
 import UserForm from './pages/users/UserForm'
 
@@ -124,6 +125,16 @@ export default function App() {
             <ProtectedRoute>
               <MainLayout>
                 <PoliciesList />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/policies/:id"
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <PolicyDetail />
               </MainLayout>
             </ProtectedRoute>
           }

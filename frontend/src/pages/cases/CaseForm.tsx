@@ -99,10 +99,10 @@ export default function CaseForm() {
         lostReason: values.status === 'LOST' ? values.lostReason : null,
       }
       const data = isEdit ? await updateCase(id, payload) : await createCase(payload)
-      toast.success(isEdit ? 'Caso actualizado.' : 'Caso creado.')
+      toast.success(isEdit ? 'Case updated.' : 'Case created.')
       navigate(`/cases/${data.id}`)
     } catch (err) {
-      toast.error(err?.response?.data?.message || 'No se pudo guardar el caso.')
+      toast.error(err?.response?.data?.message || 'Failed to save case.')
     } finally {
       setSaving(false)
     }
@@ -117,18 +117,18 @@ export default function CaseForm() {
         <form onSubmit={handleSubmit(onSave)} className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
-              <label className="mb-1 block text-sm font-medium text-slate-700">Buscar cliente</label>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Search Client</label>
               <input
                 className="input"
                 value={clientSearch}
                 onChange={(e) => setClientSearch(e.target.value)}
-                placeholder="Buscar por nombre de cliente..."
+                placeholder="Search by name..."
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700">Cliente*</label>
-              <select className="input" {...register('clientId', { required: 'Requerido' })}>
-                <option value="">Selecciona cliente</option>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Client *</label>
+              <select className="input" {...register('clientId', { required: 'Required' })}>
+                <option value="">Select a client</option>
                 {clients.map((c) => (
                   <option key={c.id} value={c.id}>{c.legalBusinessName} ({c.dotNumber})</option>
                 ))}
@@ -142,7 +142,7 @@ export default function CaseForm() {
               </select>
             </div>
             <div className="col-span-2">
-              <label className="mb-1 block text-sm font-medium text-slate-700">Notas</label>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Notes</label>
               <textarea className="input min-h-[110px]" {...register('notes')} />
             </div>
             {statusValue === 'LOST' ? (
@@ -156,28 +156,28 @@ export default function CaseForm() {
           {isEdit ? (
             <div className="mt-6 border-t border-slate-200 pt-4">
               <div className="mb-3 flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-slate-900">Coberturas solicitadas</h3>
+                <h3 className="text-sm font-semibold text-slate-900">Coverage Requests</h3>
                 <button
                   type="button"
                   onClick={() => setCoverageModal({ open: true, editing: null })}
                   className="rounded-lg bg-purple-600 px-3 py-1.5 text-xs font-medium text-white"
                 >
-                  Agregar cobertura
+                  Add Coverage
                 </button>
               </div>
               <div className="overflow-x-auto rounded-lg border border-slate-200">
                 <table className="w-full text-left text-sm">
                   <thead>
                     <tr className="border-b border-slate-200 text-xs uppercase text-slate-500">
-                      <th className="px-3 py-2">Tipo</th>
-                      <th className="px-3 py-2">Límite</th>
-                      <th className="px-3 py-2">Deducible</th>
-                      <th className="px-3 py-2">Acciones</th>
+                      <th className="px-3 py-2">Type</th>
+                      <th className="px-3 py-2">Limit</th>
+                      <th className="px-3 py-2">Deductible</th>
+                      <th className="px-3 py-2">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {coverages.length === 0 ? (
-                      <tr><td className="px-3 py-4 text-slate-500" colSpan={4}>Sin coberturas.</td></tr>
+                      <tr><td className="px-3 py-4 text-slate-500" colSpan={4}>No coverages yet.</td></tr>
                     ) : coverages.map((cv) => (
                       <tr key={cv.id} className="border-b border-slate-100">
                         <td className="px-3 py-2">{cv.coverageType}</td>
@@ -189,7 +189,7 @@ export default function CaseForm() {
                             className="rounded border border-slate-300 px-2 py-1 text-xs"
                             onClick={() => setCoverageModal({ open: true, editing: cv })}
                           >
-                            Editar
+                            Edit
                           </button>
                         </td>
                       </tr>
@@ -201,9 +201,9 @@ export default function CaseForm() {
           ) : null}
 
           <div className="mt-6 flex justify-end gap-2 border-t border-slate-200 pt-4">
-            <button type="button" onClick={() => navigate('/cases')} className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm">Cancelar</button>
+            <button type="button" onClick={() => navigate('/cases')} className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm">Cancel</button>
             <button type="submit" disabled={saving} className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-60">
-              {saving ? 'Guardando...' : 'Guardar'}
+              {saving ? 'Saving...' : 'Save Case'}
             </button>
           </div>
         </form>
@@ -223,9 +223,9 @@ export default function CaseForm() {
               const refreshed = await getCaseById(id)
               setCoverages(refreshed.coverageRequests || [])
               setCoverageModal({ open: false, editing: null })
-              toast.success('Cobertura guardada.')
+              toast.success('Coverage saved.')
             } catch (err) {
-              toast.error(err?.response?.data?.message || 'No se pudo guardar cobertura.')
+              toast.error(err?.response?.data?.message || 'Failed to save coverage.')
             }
           }}
           coverageTypes={coverageTypes}
@@ -247,8 +247,8 @@ function CoverageModal({ initial, onClose, onSave, coverageTypes }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4">
       <div className="w-full max-w-xl rounded-xl border border-slate-200 bg-white p-5 shadow-xl">
         <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-slate-900">{initial ? 'Editar cobertura' : 'Agregar cobertura'}</h3>
-          <button className="text-sm text-slate-500" onClick={onClose}>Cerrar</button>
+          <h3 className="text-lg font-semibold text-slate-900">{initial ? 'Edit Coverage' : 'Add Coverage'}</h3>
+          <button className="text-sm text-slate-500" onClick={onClose}>Close</button>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div className="col-span-2">
@@ -275,8 +275,8 @@ function CoverageModal({ initial, onClose, onSave, coverageTypes }) {
           </div>
         </div>
         <div className="mt-4 flex justify-end gap-2">
-          <button className="rounded-lg border border-slate-300 px-3 py-2 text-sm" onClick={onClose}>Cancelar</button>
-          <button className="rounded-lg bg-purple-600 px-3 py-2 text-sm font-medium text-white" onClick={() => onSave(form)}>Guardar</button>
+          <button className="rounded-lg border border-slate-300 px-3 py-2 text-sm" onClick={onClose}>Cancel</button>
+          <button className="rounded-lg bg-purple-600 px-3 py-2 text-sm font-medium text-white" onClick={() => onSave(form)}>Save</button>
         </div>
       </div>
     </div>

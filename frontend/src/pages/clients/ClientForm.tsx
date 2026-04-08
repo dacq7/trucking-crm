@@ -8,11 +8,11 @@ import { createClient, getClientById, updateClient } from '../../services/client
 import { useAuth } from '../../context/AuthContext'
 
 const sections = [
-  { key: 'business', label: 'Información del negocio' },
-  { key: 'contact', label: 'Contacto' },
-  { key: 'addresses', label: 'Direcciones' },
-  { key: 'operations', label: 'Operaciones' },
-  { key: 'insurance', label: 'Historial de seguros' },
+  { key: 'business', label: 'Business Info' },
+  { key: 'contact', label: 'Contact' },
+  { key: 'addresses', label: 'Addresses' },
+  { key: 'operations', label: 'Operations' },
+  { key: 'insurance', label: 'Insurance History' },
 ]
 
 const entityTypes = ['LLC', 'CORPORATION', 'SOLE_PROPRIETOR', 'PARTNERSHIP']
@@ -155,7 +155,7 @@ export default function ClientForm() {
           },
         })
 
-        if (!res.ok) throw new Error('No se pudo cargar vendedores')
+        if (!res.ok) throw new Error('Failed to load vendors')
 
         const payload = await res.json()
         const list = Array.isArray(payload)
@@ -193,7 +193,7 @@ export default function ClientForm() {
           vendorId: data.vendorId || '',
         })
       } catch (err) {
-        toast.error(err?.response?.data?.message || 'No se pudo cargar el cliente.')
+        toast.error(err?.response?.data?.message || 'Failed to load client.')
       } finally {
         if (!cancelled) setIsLoading(false)
       }
@@ -217,22 +217,22 @@ export default function ClientForm() {
     try {
       const payload = normalizePayload(values, isAdmin)
       const data = isEdit ? await updateClient(id, payload) : await createClient(payload)
-      toast.success(isEdit ? 'Cliente actualizado.' : 'Cliente creado.')
+      toast.success(isEdit ? 'Client updated.' : 'Client created.')
       navigate(`/clients/${data.id}`)
     } catch (err) {
-      toast.error(err?.response?.data?.message || 'No se pudo guardar el cliente.')
+      toast.error(err?.response?.data?.message || 'Failed to save client.')
     } finally {
       setIsSubmitting(false)
     }
   }
 
-  if (isLoading) return <div className="p-6">Cargando...</div>
+  if (isLoading) return <div className="p-6">Loading...</div>
 
   return (
     <div>
       <PageHeader
-        title={isEdit ? 'Editar cliente' : 'Nuevo cliente'}
-        subtitle="Completa la información principal del asegurado."
+        title={isEdit ? 'Edit Client' : 'New Client'}
+        subtitle="Complete the insured's main information."
       />
 
       <div className="p-6">
@@ -257,13 +257,13 @@ export default function ClientForm() {
           {active === 'business' ? (
             <div className="grid grid-cols-2 gap-4">
               <Field label="Legal Business Name*" error={errors.legalBusinessName?.message}>
-                <input {...register('legalBusinessName', { required: 'Requerido' })} className="input" />
+                <input {...register('legalBusinessName', { required: 'Required' })} className="input" />
               </Field>
               <Field label="DBA">
                 <input {...register('dba')} className="input" />
               </Field>
               <Field label="DOT Number*" error={errors.dotNumber?.message}>
-                <input {...register('dotNumber', { required: 'Requerido' })} className="input" />
+                <input {...register('dotNumber', { required: 'Required' })} className="input" />
               </Field>
               <Field label="MC Number">
                 <input {...register('mcNumber')} className="input" />
@@ -276,7 +276,7 @@ export default function ClientForm() {
               </Field>
               <Field label="Entity Type">
                 <select {...register('entityType')} className="input">
-                  <option value="">Selecciona</option>
+                  <option value="">Select</option>
                   {entityTypes.map((v) => (
                     <option key={v} value={v}>{v}</option>
                   ))}
@@ -290,9 +290,9 @@ export default function ClientForm() {
               </Field>
               {isAdmin ? (
                 vendors.length > 0 ? (
-                  <Field label="Vendedor (solo admin)">
+                  <Field label="Vendor (admin only)">
                     <select {...register('vendorId')} className="input">
-                      <option value="">Selecciona vendedor</option>
+                      <option value="">Select vendor</option>
                       {vendors.map((vendor) => (
                         <option key={vendor.id} value={vendor.id}>
                           {vendor.name}
@@ -301,7 +301,7 @@ export default function ClientForm() {
                     </select>
                   </Field>
                 ) : (
-                  <Field label="Vendor ID (solo admin)">
+                  <Field label="Vendor ID (admin only)">
                     <input {...register('vendorId')} className="input" />
                   </Field>
                 )
@@ -312,19 +312,19 @@ export default function ClientForm() {
           {active === 'contact' ? (
             <div className="grid grid-cols-2 gap-4">
               <Field label="Contact Name*" error={errors.contactName?.message}>
-                <input {...register('contactName', { required: 'Requerido' })} className="input" />
+                <input {...register('contactName', { required: 'Required' })} className="input" />
               </Field>
               <Field label="Contact Title">
                 <input {...register('contactTitle')} className="input" />
               </Field>
               <Field label="Phone Primary*" error={errors.phonePrimary?.message}>
-                <input {...register('phonePrimary', { required: 'Requerido' })} className="input" />
+                <input {...register('phonePrimary', { required: 'Required' })} className="input" />
               </Field>
               <Field label="Phone Secondary">
                 <input {...register('phoneSecondary')} className="input" />
               </Field>
               <Field label="Email*" error={errors.email?.message}>
-                <input type="email" {...register('email', { required: 'Requerido' })} className="input" />
+                <input type="email" {...register('email', { required: 'Required' })} className="input" />
               </Field>
               <Field label="Preferred Contact">
                 <input {...register('preferredContact')} className="input" />
@@ -335,16 +335,16 @@ export default function ClientForm() {
           {active === 'addresses' ? (
             <div className="grid grid-cols-2 gap-4">
               <Field label="Physical Address*" error={errors.physicalAddress?.message}>
-                <input {...register('physicalAddress', { required: 'Requerido' })} className="input" />
+                <input {...register('physicalAddress', { required: 'Required' })} className="input" />
               </Field>
               <Field label="Physical City*" error={errors.physicalCity?.message}>
-                <input {...register('physicalCity', { required: 'Requerido' })} className="input" />
+                <input {...register('physicalCity', { required: 'Required' })} className="input" />
               </Field>
               <Field label="Physical State*" error={errors.physicalState?.message}>
-                <input {...register('physicalState', { required: 'Requerido' })} className="input" />
+                <input {...register('physicalState', { required: 'Required' })} className="input" />
               </Field>
               <Field label="Physical Zip*" error={errors.physicalZip?.message}>
-                <input {...register('physicalZip', { required: 'Requerido' })} className="input" />
+                <input {...register('physicalZip', { required: 'Required' })} className="input" />
               </Field>
 
               <label className="col-span-2 inline-flex items-center gap-2 text-sm text-slate-700">
@@ -372,17 +372,17 @@ export default function ClientForm() {
             <div className="grid grid-cols-2 gap-4">
               <Field label="Operation Type">
                 <select {...register('operationType')} className="input">
-                  <option value="">Selecciona</option>
+                  <option value="">Select</option>
                   {operationTypes.map((v) => <option key={v} value={v}>{v}</option>)}
                 </select>
               </Field>
               <Field label="Operation Radius">
                 <select {...register('operationRadius')} className="input">
-                  <option value="">Selecciona</option>
+                  <option value="">Select</option>
                   {operationRadiusOptions.map((v) => <option key={v} value={v}>{v}</option>)}
                 </select>
               </Field>
-              <Field label="States of Operation (separados por coma)" className="col-span-2">
+              <Field label="States of Operation (comma-separated)" className="col-span-2">
                 <input {...register('statesOfOperationText')} className="input" />
               </Field>
               <label className="inline-flex items-center gap-2 text-sm text-slate-700">
@@ -456,14 +456,14 @@ export default function ClientForm() {
               onClick={() => navigate('/clients')}
               className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm"
             >
-              Cancelar
+              Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
               className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
             >
-              {isSubmitting ? 'Guardando...' : 'Guardar'}
+              {isSubmitting ? 'Saving...' : 'Save Client'}
             </button>
           </div>
         </form>
