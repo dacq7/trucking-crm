@@ -113,14 +113,15 @@ The result is a system that mirrors how trucking insurance actually works — no
 
 ## Demo Credentials
 
+**[→ Open Live Demo](https://trucking-crm-one.vercel.app)**
+
 | Role | Email | Password |
 |---|---|---|
 | Admin | `admin@premiertruckins.com` | `Admin1234!` |
 | Vendor | `maria.gonzalez@premiertruckins.com` | `Vendor1234!` |
 
 The seed populates the database with 10 trucking clients (TX & FL), 24 vehicles, 18 CDL-A drivers, 20 cases across all pipeline stages, and 5 active policies totaling ~$149k in annual premium.
-
----
+Reemplaza solo esa sección en el README y listo. ¿Seguimos con Budokan o el perfil de
 
 ## Local Setup
 
